@@ -4,40 +4,61 @@ require_once ('function.php');
 require_once ('init.php');
 
 
+//Переменная переданная из URL по запросу с предыдущей страницы
 $tab  = filter_input(INPUT_GET, 'tab', FILTER_SANITIZE_NUMBER_INT);
-if($tab) {
-    $page_content_lot = include_template('main_lot.php', [
-        "categorylist" => get_arrays_lot_items($con, $tab),
-        "category" => get_array_category($con),
-        
-    
-    ]);
-    
-    $layout_content = include_template("layout.php", [
-        "content" => $page_content_lot,
-        "category" => get_array_category($con),
-        "title" => "Лот",
-        "error"=>$error
-        
-    ]);
-    
-    print($layout_content);
-}
-else {
-    
 
+
+//Переменная для запроса из БД информации по лотам
+$sql_lot="SELECT l.lot_image, l.category_id, c.category_name, l.lot_description, l.lot_name, l.lot_price_start, l.lot_date_end 
+FROM lot l
+JOIN category c
+ON  l.category_id=c.id 
+WHERE l.id=$tab";
+
+//Извлекаем данные в массив из БД по запросу переменной SQL_LOT
+$res_lot=get_arrays_DB($link, $sql_lot);
+
+//Переменная для запроса из БД информации по категориям
+$sql_category="SELECT c.category_symbol_code, c.category_name  
+FROM category c";
+
+//Извлекаем данные в массив из БД по запросу переменной SQL_CATEGORY
+$res_category=get_arrays_DB($link, $sql_category);
+
+
+if(!$res_lot) {
     http_response_code(404);
-    die();
-
+    $page_content_lot = include_template('error.php', ['error' => http_response_code()]);
 }
 
+else{
+$page_content_lot = include_template ('main_lot.php', [
+        "goodlist" => $res_lot,
+        "categorylist" => $res_category 
+    ]);
+}
+$layout_content = include_template ("layout.php", [
+    "content" => $page_content_lot,
+    "categorylist" => $res_category,
+    "title" => "Лот"
+    ]);
+    
+print($layout_content);
+
+    
 
 
 
 
-var_dump($_GET['tab']);
-$result=get_arrays_lot_items($con, $tab);
-var_dump($result);
+
+
+
+
+
+
+
+
+
 
 
 

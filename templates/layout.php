@@ -10,9 +10,10 @@ $user_name = "Роман Кунгурцев"; // укажите здесь ва�
     <title><?= $title; ?></title>
     <link href="../css/normalize.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/style_error.css" rel="stylesheet">
 </head>
 <body>
-    <div class="error"><?=$error?></div>
+   
 <div class="page-wrapper">
     <header class="main-header">
         <div class="main-header__container container">
@@ -58,7 +59,7 @@ $user_name = "Роман Кунгурцев"; // укажите здесь ва�
         <nav class="nav">
             <ul class="nav__list container">
                 <!--заполните этот список из массива категорий-->
-                <?php foreach ($category as $category): ?>
+                <?php foreach ($categorylist as $category): ?>
                 <li class="nav__item">
                     <a href="pages/all-lots.html"><?= $category['category_name']; ?></a>
                 </li>

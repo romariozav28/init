@@ -6,7 +6,7 @@
         <h2 class="promo__title">Нужен стафф для катки?</h2>
         <p class="promo__text">На нашем интернет-аукционе ты найдёшь самое эксклюзивное сноубордическое и горнолыжное снаряжение.</p>
         <ul class="promo__list">
-            <?php foreach ($category as $category): ?>
+            <?php foreach ($categorylist as $category): ?>
             <li class="promo__item promo__item--<?= $category["category_symbol_code"]; ?>">
                 <a class="promo__link" href="pages/all-lots.html"> <?= $category["category_name"]; ?> </a>
             </li>
@@ -20,7 +20,7 @@
         </div>
         <ul class="lots__list">
             <!--заполните этот список из массива с товарами-->
-            <?php foreach ($categorylist as $good): ?>
+            <?php foreach ($goodlist as $good): ?>
             
             <li class="lots__item lot">
                 <div class="lot__image">

@@ -1,11 +1,16 @@
 <?php
 
-$con=mysqli_connect ('localhost', 'root', '', 'yetycave');
-mysqli_set_charset($con, 'utf8');
+require_once ('db.php');
 
-if ($con == false) {
-    $error="Ошибка подключения: ".mysqli_connect_error();
+$link=mysqli_connect ($db['host'], $db['user'], $db['password'], $db['db']);
+mysqli_set_charset($link, 'utf8');
+
+if (!$link) {
+    $error=include_template("error.php", [
+    "error_link" => "Ошибка подключения: " . mysqli_connect_error()   
+    ]);
 }
 else {
-    $error="Соединение установлено";
+    $error= "Соединение с базой данных установлено";   
 }
+
