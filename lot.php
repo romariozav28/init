@@ -5,7 +5,7 @@ require_once ('init.php');
 
 
 //Переменная переданная из URL по запросу с предыдущей страницы
-$tab  = filter_input(INPUT_GET, 'tab', FILTER_SANITIZE_NUMBER_INT);
+$id  = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
 
 //Переменная для запроса из БД информации по лотам
@@ -13,7 +13,7 @@ $sql_lot="SELECT l.lot_image, l.category_id, c.category_name, l.lot_description,
 FROM lot l
 JOIN category c
 ON  l.category_id=c.id 
-WHERE l.id=$tab";
+WHERE l.id=$id";
 
 //Извлекаем данные в массив из БД по запросу переменной SQL_LOT
 $res_lot=get_arrays_DB($link, $sql_lot);
@@ -28,17 +28,17 @@ $res_category=get_arrays_DB($link, $sql_category);
 
 if(!$res_lot) {
     http_response_code(404);
-    $page_content_lot = include_template('error.php', ['error' => http_response_code()]);
+    $page_content = include_template('error.php', ['error' => http_response_code()]);
 }
 
 else{
-$page_content_lot = include_template ('main_lot.php', [
+$page_content = include_template ('main_lot.php', [
         "goodlist" => $res_lot,
         "categorylist" => $res_category 
     ]);
 }
 $layout_content = include_template ("layout.php", [
-    "content" => $page_content_lot,
+    "content" => $page_content,
     "categorylist" => $res_category,
     "title" => "Лот"
     ]);

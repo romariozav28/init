@@ -49,7 +49,7 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
         $errorMsg = 'Не удалось инициализировать подготовленное выражение: ' . mysqli_error($link);
         die($errorMsg);
     }
-
+    
     if ($data) {
         $types = '';
         $stmt_data = [];
@@ -59,11 +59,9 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
 
             if (is_int($value)) {
                 $type = 'i';
-            }
-            else if (is_string($value)) {
+            } else if (is_string($value)) {
                 $type = 's';
-            }
-            else if (is_double($value)) {
+            } else if (is_double($value)) {
                 $type = 'd';
             }
 
@@ -75,8 +73,7 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
 
         $values = array_merge([$stmt, $types], $stmt_data);
 
-        $func = 'mysqli_stmt_bind_param';
-        $func(...$values);
+        mysqli_stmt_bind_param(...$values);      
 
         if (mysqli_errno($link) > 0) {
             $errorMsg = 'Не удалось связать подготовленное выражение с параметрами: ' . mysqli_error($link);
@@ -86,6 +83,7 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
 
     return $stmt;
 }
+    
 
 /**
  * Возвращает корректную форму множественного числа
@@ -190,6 +188,85 @@ function include_template($name, array $data = []) {
     
     }
     }
+
+
+
+/**Проверка на валидацию заполнено ли значение из списка категории
+ */
+
+
+function validateCategory ($id, $allowed_list) { 
+    if (!in_array($id, $allowed_list)) { //in_array проверяет присутствует ли в массиве значение переменной id  в списке значений переменной allowed_list
+        return "Указана несуществующая категория";
+    }
+    return null;
+} 
+
+
+
+/**Проверка на валидацию длины заполнненого значения в форме
+ */
+function validateLength ($value, $min, $max) {
+    if($value) {
+        $len = strlen($value); //Возвращает длину строки
+            if($len < $min or $len > $max) {
+                return "Значение должно быть от $min до $max символов";
+            } 
+    }
+    return null;
+}
+
+
+
+/**Принимает переменную извне PHP и, при необходимости, фильтрует её
+ */
+function getPostVal($name) {
+    return filter_input_array(INPUT_POST, $name);//
+}
+
+/**
+ * Проверяет что содержимое поля является числом больше нуля
+ * @param string $num число которое ввел пользователь в форму
+ * @return string Текст сообщения об ошибке
+ */
+function validate_number ($num) {
+    
+    if (!empty($num)) {
+        
+        if (is_numeric($num) && $num > 0) {
+            return NULL;
+        }
+        else {return "Содержимое поля должно быть целым числом больше ноля";}
+        
+    }
+    
+
+};
+
+
+
+
+
+/**
+ * Проверяет что дата окончания торгов не меньше одного дня
+ * @param string $date дата которую ввел пользователь в форму
+ * @return string Текст сообщения об ошибке
+ */
+function validate_date ($date) {
+    if (is_date_valid($date)) {
+        $now = date_create("now");
+        $d = date_create($date);
+        $diff = date_diff($d, $now);
+        $interval = date_interval_format($diff, "%d");
+
+        if ($interval < 1) {
+            return "Дата должна быть больше текущей не менее чем на один день";
+        };
+    } else {
+        return "Содержимое поля «дата завершения» должно быть датой в формате «ГГГГ-ММ-ДД»";
+    }
+};
+
 
 
 
