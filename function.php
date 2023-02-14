@@ -71,7 +71,11 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
             }
         }
 
+        var_dump($types);
+
         $values = array_merge([$stmt, $types], $stmt_data);
+
+        var_dump($values);
 
         mysqli_stmt_bind_param(...$values);      
 
@@ -179,6 +183,7 @@ function include_template($name, array $data = []) {
   */
   function get_arrays_DB ($connection, $sql) {
     $sql = $sql; 
+
     $db_result = mysqli_query($connection, $sql);
     if(!$db_result){
         $result="Ошибка SQL" . mysqli_error($connection);        
@@ -256,12 +261,13 @@ function validate_date ($date) {
     if (is_date_valid($date)) {
         $now = date_create("now");
         $d = date_create($date);
-        $diff = date_diff($d, $now);
-        $interval = date_interval_format($diff, "%d");
+        $diff = date_diff($now, $d);
+
+        $interval = date_interval_format($diff, "%r%d");
 
         if ($interval < 1) {
             return "Дата должна быть больше текущей не менее чем на один день";
-        };
+        }
     } else {
         return "Содержимое поля «дата завершения» должно быть датой в формате «ГГГГ-ММ-ДД»";
     }
@@ -271,3 +277,55 @@ function validate_date ($date) {
 
 
 
+function validateEmailAuthorisation ($email, $showEmails) {
+    if (in_array ($email, $showEmails)) {
+        return "Пользователь с таким email уже существует, введите уникальный email";
+    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Введите корректный email";
+    }
+    
+    else { return NULL;}
+};
+
+function validateUser ($user, $showUsers) {
+    if (!in_array($user, $showUsers)) {
+        return NULL;
+    } else {
+        return "Пользователь с таким именем уже существует, введите уникальное имя";
+    }
+};
+
+function validateEmailLogin ($email, $showEmails) {
+    if  (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Введите корректный email";
+    } else if (!in_array ($email, $showEmails)) {
+        return "Пользователь с этим email не зарегистрирован, введите другой email";
+    } 
+    
+    else { return NULL;}
+};
+
+
+function get_login ($link, $email) {
+    if(!$link) {
+        $error = mysqli_connect_error();
+        return $error;
+    } else {
+        $sql = "SELECT id, user_email, user_password, user_name FROM user WHERE user_email = '$email'";
+        $result = mysqli_query($link, $sql);
+        if($result) {
+            if(mysqli_num_rows($result)===1){
+                $result_user=mysqli_fetch_assoc($result);
+                
+            }else if (mysqli_num_rows($result)>1){
+                $result_user=mysqli_fetch_all($result, MYSQLI_ASSOC);
+                
+            }
+        } else {
+            $result_user="Ошибка MySqli" . mysqli_error($link);
+        }; 
+
+    }
+
+    return $result_user;
+};

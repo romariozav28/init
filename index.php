@@ -1,7 +1,9 @@
 <?php
+session_start();
 
 require_once("function.php");
 require_once("init.php");
+require_once("start_user.php");
 
 
 $sql_lot="SELECT l.id, l.lot_image, l.category_id, c.category_name, l.lot_name, l.lot_price_start, l.lot_date_end 
@@ -23,7 +25,10 @@ $page_content = include_template("main.php", [
 $layout_content = include_template("layout.php", [
     "content" => $page_content,
     "categorylist" => get_arrays_DB($link, $sql_category),
-    "title" => "Главная"
+    "title" => "Главная",
+    "is_auth" => $is_auth,
+    
+    
 ]);
 
 print($layout_content);

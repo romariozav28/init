@@ -1,7 +1,12 @@
 <?php
+session_start();
 
 require_once ('function.php');
 require_once ('init.php');
+require_once ('start_user.php');
+
+
+
 
 //Переменная для запроса из БД информации по категориям
 $sql_category="SELECT c.id, c.category_name
@@ -11,21 +16,31 @@ FROM category c";
 $res_category=get_arrays_DB($link, $sql_category);
 if(!$res_category) {
     $page_content = include_template("error.php", [
+        "categorylist" => $res_category,
         "error" => mysqli_connect_error()
     ]);
 }
 
+if (!$_SESSION) {
+    $page_content = include_template("error.php", [
+        "categorylist" => $res_category,
+        "error" => "Вы не авторизованы" . mysqli_connect_error()
+    ]);
+} else {
+
+
+    $lot = ['lot_name' => '', 'lot_description' => '', 'lot_price_start'=>'', 'lot_price_step'=>'', 'lot_date_end'=>'', 'category_name'=>''];
 //формируем шаблон main_add.php для подключения к сценарию add.php, на данный момент состоящий только из списка незаполненных форм и включенных в них значений переменной res_category
 $page_content = include_template("main_add.php", [
-    "categorylist" => $res_category
+    "categorylist" => $res_category,
+    "lot" => $lot
 ]);
 
 $cats_ids=array_column($res_category, 'id');//возвращает массив значений из одного столбца входного массива
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {//проверяем что установлен метод POST
 
-    $required = ['lot_name', 'lot_description', 'lot_price_start', 'lot_price_step', 'lot_date_end', 'category_name'];//создаем массив, где названия ключей полей являются значениями
-    
+    $required = ['lot_name', 'lot_description', 'lot_price_start', 'lot_price_step', 'lot_date_end', 'category_name'];//создаем массив, где значения ключей полей являются названиями полей формы, для проверки на заполненность формы
     $errors = [];//создаем массив для хранения ошибок
 
     //создаме массив для хранения валидации данных при заполнения полей значениями
@@ -47,11 +62,11 @@ $cats_ids=array_column($res_category, 'id');//возвращает массив 
         'lot_date_end' => function($value) {
             return validate_date($value);//валидация формата даты
         },
-        'category_id' => function($value) use ($cats_ids) {
+        'category_name' => function($value) use ($cats_ids) {
             return validateCategory($value, $cats_ids);//валидация значения категории, проверяет присутствует ли значение value  в списке cats_ids, где cats_ids принимается внешнее значение функции и приравнивается к массиву cats_ids
         }
     ];
-   
+
     $lot = filter_input_array(INPUT_POST, ['lot_name' => FILTER_DEFAULT, 'lot_description' => FILTER_DEFAULT, 'lot_price_start' => FILTER_DEFAULT, 'lot_price_step' => FILTER_DEFAULT, 'lot_date_end' => FILTER_DEFAULT,  'category_name' => FILTER_DEFAULT], true); // получаем несколько переменных извне и при необходимости фильтруем их, т.е. при заполнении форм
 
     
@@ -68,8 +83,7 @@ $cats_ids=array_column($res_category, 'id');//возвращает массив 
     }
 
     $errors = array_filter($errors);//фильтрует массив, определяя пустые поля и удаляя их
-    
-       
+
     if (!empty($_FILES["lot_img"]["name"])) {
 
         $tmp_name = $_FILES["lot_img"]["tmp_name"];
@@ -78,8 +92,6 @@ $cats_ids=array_column($res_category, 'id');//возвращает массив 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $file_type = finfo_file($finfo, $tmp_name);
 
-
-        
         if($file_type === "image/jpeg") {
             $ext = ".jpg";
             $filename = uniqid() . $ext;
@@ -91,14 +103,11 @@ $cats_ids=array_column($res_category, 'id');//возвращает массив 
             $lot["lot_img"] = "uploads/". $filename;
             move_uploaded_file($_FILES["lot_img"]["tmp_name"], $lot["lot_img"]);
         }
-            
         else {
             $errors["lot_img"] = "Допустимые форматы файлов: jpg, jpeg, png";
         } 
-
     } 
     else {$errors["lot_img"] = "Вы не загрузили изображение";}
-    
 
     if (count($errors)) {//если хотя бы одна запись отсутствует
         $page_content = include_template("main_add.php", [//шаблон main_add формируется исходя из этих данных, т.е. добавляются элементы error
@@ -121,12 +130,16 @@ $cats_ids=array_column($res_category, 'id');//возвращает массив 
         else {$error = mysqli_error($link);
         }
     }
-}    
+}  
+} 
 
 $layout_content = include_template ("layout.php", [
     "content" => $page_content,
     "categorylist" => $res_category,
-    "title" => "Добавление лота"
+    "title" => "Добавление лота",
+    "is_auth" => $is_auth,
+    
     ]);
     
 print($layout_content);
+ 
