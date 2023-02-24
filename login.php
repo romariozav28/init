@@ -3,23 +3,10 @@
 require_once ('init.php');
 require_once ('function.php');
 require_once ('start_user.php');
+require_once ('extract_db.php');
 
-//Переменная для запроса из БД информации по категориям
-$sql_category="SELECT c.id, c.category_name
-FROM category c";
 
-//Извлекаем данные в массив из БД по запросу переменной SQL_CATEGORY
-$res_category=get_arrays_DB($link, $sql_category);
-if(!$res_category) {
-    $page_content = include_template("error.php", [
-        "categorylist" => $res_category,
-        "error" => mysqli_connect_error()
-    ]);
-}
-//Переменная для запроса из БД информации по пользователям
-$sql_user = "SELECT user_email FROM user";
-//Извлекаем данные в массив из БД по запросу переменной SQL_USER
-$res_user = get_arrays_DB($link, $sql_user);
+$res_user = $res_email_and_user;
 if(!$res_user) {
     $page_content = include_template("error.php", [
         "categorylist" => $res_category,

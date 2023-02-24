@@ -3,25 +3,17 @@
 require_once ('init.php');
 require_once ('function.php');
 require_once ('start_user.php');
+require_once ('extract_db.php');
 
-$sql_category="SELECT c.id, c.category_name
-FROM category c";
-//Извлекаем данные в массив из БД по запросу переменной SQL_CATEGORY
-$res_category=get_arrays_DB($link, $sql_category);
-if(!$res_category) {
-    $page_content = include_template("error.php", [
-        "error" => mysqli_connect_error()
-    ]);
-}
+
 //формируем шаблон main_sign_up.php для подключения к сценарию sign_up.php, на данный момент состоящий только из списка незаполненных форм и включенных в них значений переменной res_category
 $page_content = include_template("main_sign_up.php", [
     "categorylist" => $res_category,
     "sign_up" => ['email'=>"", 'password'=>"", 'name'=>"", 'message'=>""]
 ]);
 
-$sql_email_and_user = "SELECT user_email, user_name FROM user";
-$res_email_and_user=get_arrays_DB($link, $sql_email_and_user);
-if(!$res_email_and_user) {
+
+if(!$res_email_and_user) {//переменная res_email_and_user определена в файле extract_db.php, результатом является извлечение из базы данных массива данных из таблицы USER
     $page_content = include_template("error.php", [
         "error" => mysqli_connect_error()
     ]);
@@ -33,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $required = ['email', 'password', 'name', 'message'];
     $errors = [];
-
     $rules = [
         "email" => function ($value) use ($emails) {
             return validateEmailAuthorisation($value, $emails);
@@ -51,9 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $sign_up = filter_input_array(INPUT_POST, ["email" => FILTER_DEFAULT, "password" => FILTER_DEFAULT, "name" => FILTER_DEFAULT, "message" => FILTER_DEFAULT], true);
     
-    if (!empty($sign_up['password'])){
-        $sign_up['password'] = password_hash($sign_up['password'], PASSWORD_DEFAULT);
-    }
+    
 
     foreach ($sign_up as $key => $value) {
         if (isset($rules[$key])) {
@@ -63,6 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if(in_array($key, $required) && empty($value)) {
             $errors[$key] = "Поле $key надо заполнить";
         }
+    }
+
+    if (!empty($sign_up['password'])){
+        $sign_up['password'] = password_hash($sign_up['password'], PASSWORD_DEFAULT);
     }
 
     $errors = array_filter($errors);

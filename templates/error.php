@@ -11,7 +11,7 @@
         </nav>
     <section class="lot-item container">
         <h2>Что то пошло не так</h2>
-         <p><?= $error ?></p>
+        <p><?= $error ?></p>
     </section>
 
 

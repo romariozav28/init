@@ -6,8 +6,8 @@
         </li>
         <?php endforeach; ?>
       </ul>
-    </nav>
-    <form class="form container form--invalid" action="sign_up.php" method="post" autocomplete="off"> <!-- form
+</nav>
+<form class="form container form--invalid" action="sign_up.php" method="post" autocomplete="off"> <!-- form
     --invalid -->
       <h2>Регистрация нового аккаунта</h2>
       <?php $classname = isset($errors['email']) ? "form__item--invalid" : "" ?>
@@ -40,4 +40,4 @@
 
       <button type="submit" class="button">Зарегистрироваться</button>
       <a class="text-link" href="login.php">Уже есть аккаунт</a>
-    </form>
+</form>

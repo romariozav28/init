@@ -4,27 +4,13 @@ session_start();
 require_once ('function.php');
 require_once ('init.php');
 require_once ('start_user.php');
+require_once ('extract_db.php');
 
-
-
-
-//Переменная для запроса из БД информации по категориям
-$sql_category="SELECT c.id, c.category_name
-FROM category c";
-
-//Извлекаем данные в массив из БД по запросу переменной SQL_CATEGORY
-$res_category=get_arrays_DB($link, $sql_category);
-if(!$res_category) {
-    $page_content = include_template("error.php", [
-        "categorylist" => $res_category,
-        "error" => mysqli_connect_error()
-    ]);
-}
 
 if (!$_SESSION) {
     $page_content = include_template("error.php", [
         "categorylist" => $res_category,
-        "error" => "Вы не авторизованы" . mysqli_connect_error()
+        "error" => "Вы не авторизованы. Выполните вход на сайт."
     ]);
 } else {
 

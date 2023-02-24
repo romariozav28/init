@@ -60,3 +60,13 @@ JOIN user ON bet_lot.user_id = user.id
 JOIN lot ON bet_lot.lot_id = lot.id
 WHERE lot.id=3
 ORDER BY bet_lot.bet_date_of_placement DESC; 
+
+SELECT lot.lot_image, lot.category_id, category.category_name, lot.lot_description, lot.lot_name, lot.lot_price_start, lot.lot_date_end 
+    FROM lot 
+    JOIN category 
+    ON  lot.category_id=category.id 
+    WHERE lot.lot_name='2014 Rossignol District Snowboard';
+    
+   SELECT * 
+	FROM lot
+	WHERE MATCH(lot_name,lot_description) AGAINST('Snowboard')

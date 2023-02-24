@@ -48,6 +48,8 @@ CREATE TABLE bet_lot (
 );
 
 
-
+SELECT lot_name, lot_description, MATCH (lot_name, lot_description) AGAINST('сноуборд') as наименование
+FROM lot
+WHERE MATCH(lot_name,lot_description) AGAINST('сноуборд')
 
 
