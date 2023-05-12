@@ -16,6 +16,7 @@ if (!$_SESSION) {
 
 
     $lot = ['lot_name' => '', 'lot_description' => '', 'lot_price_start'=>'', 'lot_price_step'=>'', 'lot_date_end'=>'', 'category_name'=>''];
+        
 //формируем шаблон main_add.php для подключения к сценарию add.php, на данный момент состоящий только из списка незаполненных форм и включенных в них значений переменной res_category
 $page_content = include_template("main_add.php", [
     "categorylist" => $res_category,
@@ -103,7 +104,8 @@ $cats_ids=array_column($res_category, 'id');//возвращает массив 
          ]);
     } 
     else {
-        $sql_input_lot='INSERT INTO lot (lot_name, lot_description, lot_price_start, lot_price_step, lot_date_end, category_id, lot_image, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, 1);';
+        $lot['user_id'] = $_SESSION['id'];
+        $sql_input_lot='INSERT INTO lot (lot_name, lot_description, lot_price_start, lot_price_step, lot_date_end, category_id, lot_image, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
         $stmt = db_get_prepare_stmt($link, $sql_input_lot, $lot);
 
         $res=mysqli_stmt_execute($stmt);
@@ -124,6 +126,7 @@ $layout_content = include_template ("layout.php", [
     "categorylist" => $res_category,
     "title" => "Добавление лота",
     "is_auth" => $is_auth,
+    "user_name"=> $user_name
     
     ]);
     

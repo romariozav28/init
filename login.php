@@ -61,9 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') { //Проверка на метод 
     } else {
         $login_result=get_login($link, $login['email']);
         if(password_verify($login['password'], $login_result['user_password'])){
-            
+
             session_start();
             $_SESSION['user_name'] = $login_result['user_name'];
+            $_SESSION['id'] = $login_result['id'];
 
             header("Location:/index.php");
         } else {
@@ -85,6 +86,8 @@ $layout_content = include_template ("layout.php", [
     "categorylist" => $res_category,
     "title" => "Авторизация",
     "is_auth" => $is_auth,
+   
+   
     
     ]);
     

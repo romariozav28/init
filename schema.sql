@@ -47,9 +47,11 @@ CREATE TABLE bet_lot (
     FOREIGN KEY (lot_id) REFERENCES lot(id)
 );
 
+/*
+создали FULLTEXT индекс в таблице LOT
+*/
+CREATE FULLTEXT INDEX search
+ON lot (lot_name,lot_description)
 
-SELECT lot_name, lot_description, MATCH (lot_name, lot_description) AGAINST('сноуборд') as наименование
-FROM lot
-WHERE MATCH(lot_name,lot_description) AGAINST('сноуборд')
 
 

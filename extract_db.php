@@ -33,5 +33,18 @@ $res_lot = get_arrays_DB($link, $sql_lot_id);
 return $res_lot;};
 
 //Извлекаем данные из БД таблица user для сценария регистрации на сайте sign_up.php (для валидации принятых значений с таблицей USER и техническим заданием)
-$sql_email_and_user = "SELECT user_email, user_name FROM user";
+$sql_email_and_user = "SELECT user_email, user_name, id FROM user";
 $res_email_and_user=get_arrays_DB($link, $sql_email_and_user);
+
+
+
+function extract_search ($search, $link) {
+    $sql_search = "SELECT l.lot_name, l.lot_image, l.lot_price_start, l.lot_date_end, l.category_id, c.category_name
+    FROM lot l
+    JOIN category c ON l.category_id = c.id
+    WHERE 
+    MATCH(lot_name, lot_description) 
+    AGAINST('$search')";
+    $res_search = get_arrays_DB($link, $sql_search);
+    return $res_search;
+};

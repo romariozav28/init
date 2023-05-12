@@ -16,7 +16,7 @@
             <?php $classname=isset($errors['lot_name']) ? "form__item--invalid" : ""; ?>
             <div class="form__item <?= $classname ?> "> <!-- form__item--invalid -->
                 <label for="lot-name">Наименование <sup>*</sup></label>
-                <input id="lot-name" type="text" name="lot_name" placeholder="Введите наименование лота" value="<?= $lot['lot_name'] ?>">
+                <input id="lot-name" type="text" name="lot_name" placeholder="Введите наименование лота" value="<?= $lot['lot_name']; ?>">
                 <span class="form__error"><?= $errors['lot_name'] ?></span>
             </div>
 
@@ -24,9 +24,9 @@
             <div class="form__item <?= $classname ?>">
                 <label for="category">Категория <sup>*</sup></label>
                 <select id="category" name="category_name">
-                    <option value="">Выберите категорию</option>
+                    <option>Введите наименование категории</option>
                     <?php foreach ($categorylist as $category): ?>
-                        <option value="<?= $category['id'] ?>"><?= $category['category_name'] ?></option>
+                        <option value="<?= $category['id'] ?>" ><?= $category['category_name'] ?></option>
                     <?php endforeach; ?>
                 </select>
                 <span class="form__error"><?= $errors['category_name']; ?></span>
@@ -70,8 +70,8 @@
 
             <?php $classname=isset($errors['lot_date_end']) ? "form__item--invalid" : ""; ?>
             <div class="form__item <?= $classname ?>">
-                <label for="lot-date">Дата окончания торгов <sup>*</sup></label>
-                <input class="form__input-date" id="lot-date" type="text" name="lot_date_end" placeholder="Введите дату в формате ГГГГ-ММ-ДД" value="<?= $lot['lot_date_end'] ?>">
+                <label for="lot_date_end">Дата окончания торгов <sup>*</sup></label>
+                <input class="form__input-date" id="lot_date_end" type="text" name="lot_date_end" placeholder="Введите дату в формате ГГГГ-ММ-ДД">
                 <span class="form__error"><?= $errors['lot_date_end'] ?></span>
             </div>
         </div>

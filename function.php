@@ -326,6 +326,5 @@ function get_login ($link, $email) {
         }; 
 
     }
-
     return $result_user;
 };
