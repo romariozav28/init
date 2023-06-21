@@ -1,12 +1,12 @@
 <?php
-
+//сценарий авторизации на сайте
 require_once ('init.php');
 require_once ('function.php');
 require_once ('start_user.php');
 require_once ('extract_db.php');
 
 
-$res_user = $res_email_and_user;
+$res_user = $res_email_and_user;//извлекаем данные из базы данных таблица user
 if(!$res_user) {
     $page_content = include_template("error.php", [
         "categorylist" => $res_category,
@@ -86,6 +86,7 @@ $layout_content = include_template ("layout.php", [
     "categorylist" => $res_category,
     "title" => "Авторизация",
     "is_auth" => $is_auth,
+    "user_name" => $user_name
    
    
     

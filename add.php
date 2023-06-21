@@ -10,25 +10,30 @@ require_once ('extract_db.php');
 if (!$_SESSION) {
     $page_content = include_template("error.php", [
         "categorylist" => $res_category,
-        "error" => "Вы не авторизованы. Выполните вход на сайт."
+        "error" => "Вы не авторизованы. Выполните вход на сайт.",
+        
     ]);
 } else {
 
-
+    
+    $cats_names=array_column($res_category, 'category_name');//возвращает массив значений из одного столбца входного массива
     $lot = ['lot_name' => '', 'lot_description' => '', 'lot_price_start'=>'', 'lot_price_step'=>'', 'lot_date_end'=>'', 'category_name'=>''];
-        
+    $required = ['lot_name', 'lot_description', 'lot_price_start', 'lot_price_step', 'lot_date_end', 'category_name'];//создаем массив, где значения ключей полей являются названиями полей формы, для проверки на заполненность формы
+    $cats_ids=array_column($res_category, 'id');//возвращает массив значений из одного столбца входного массива
+    $errors = [];//создаем массив для хранения ошибок
+
 //формируем шаблон main_add.php для подключения к сценарию add.php, на данный момент состоящий только из списка незаполненных форм и включенных в них значений переменной res_category
 $page_content = include_template("main_add.php", [
     "categorylist" => $res_category,
-    "lot" => $lot
+    "lot" => $lot,
+    "cats_names" => $cats_names,
+    
 ]);
 
-$cats_ids=array_column($res_category, 'id');//возвращает массив значений из одного столбца входного массива
+
+
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {//проверяем что установлен метод POST
-
-    $required = ['lot_name', 'lot_description', 'lot_price_start', 'lot_price_step', 'lot_date_end', 'category_name'];//создаем массив, где значения ключей полей являются названиями полей формы, для проверки на заполненность формы
-    $errors = [];//создаем массив для хранения ошибок
 
     //создаме массив для хранения валидации данных при заполнения полей значениями
     //в случае успешной валидации возвращает NULL
@@ -69,7 +74,9 @@ $cats_ids=array_column($res_category, 'id');//возвращает массив 
         }
     }
 
+    
     $errors = array_filter($errors);//фильтрует массив, определяя пустые поля и удаляя их
+    
 
     if (!empty($_FILES["lot_img"]["name"])) {
 
@@ -96,19 +103,22 @@ $cats_ids=array_column($res_category, 'id');//возвращает массив 
     } 
     else {$errors["lot_img"] = "Вы не загрузили изображение";}
 
-    if (count($errors)) {//если хотя бы одна запись отсутствует
+    if (count($errors)) {//если хотя бы одно значение в форме добавления лота отсутствует
         $page_content = include_template("main_add.php", [//шаблон main_add формируется исходя из этих данных, т.е. добавляются элементы error
             "categorylist" => $res_category,
             "lot" => $lot,
-            "errors" => $errors
+            "errors" => $errors,
+            "cats_names" => $cats_names,
+
          ]);
+
     } 
     else {
         $lot['user_id'] = $_SESSION['id'];
         $sql_input_lot='INSERT INTO lot (lot_name, lot_description, lot_price_start, lot_price_step, lot_date_end, category_id, lot_image, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
         $stmt = db_get_prepare_stmt($link, $sql_input_lot, $lot);
 
-        $res=mysqli_stmt_execute($stmt);
+        $res=mysqli_stmt_execute($stmt);//выполняется заранее подготовленное выражение, которое берется из $stmt
 
         if ($res) {
             $lot_id = mysqli_insert_id($link);
@@ -118,7 +128,9 @@ $cats_ids=array_column($res_category, 'id');//возвращает массив 
         else {$error = mysqli_error($link);
         }
     }
-}  
+} 
+
+
 } 
 
 $layout_content = include_template ("layout.php", [
@@ -126,7 +138,9 @@ $layout_content = include_template ("layout.php", [
     "categorylist" => $res_category,
     "title" => "Добавление лота",
     "is_auth" => $is_auth,
-    "user_name"=> $user_name
+    "user_name"=> $user_name,
+    
+   
     
     ]);
     

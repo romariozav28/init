@@ -17,7 +17,7 @@ $layout_content = include_template("layout.php", [
     "categorylist" => $res_category,
     "title" => "Главная",
     "is_auth" => $is_auth,
-   
+    "user_name" => $user_name
     
     
 ]);

@@ -660,7 +660,7 @@ main.container {
 .timer {
   position: relative;
   padding: 6px 8px 5px 25px;
-  background-color: #879296;
+  background-color: #71af52;
   font-size: 13px;
   line-height: 18px;
   color: #ffffff;
@@ -689,6 +689,7 @@ main.container {
 
 .timer--end {
   padding: 6px 8px 5px 8px;
+  background-color: #45abde;
 }
 
 .timer--win::before,
@@ -1203,7 +1204,7 @@ input:invalid .form__error{
 }
 
 .rates__timer .timer {
-  width: 82px;
+  display: inline-block;
   box-sizing: border-box;
 }
 

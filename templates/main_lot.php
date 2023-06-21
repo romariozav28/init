@@ -3,7 +3,7 @@
     <ul class="nav__list container">
         <?php foreach ($categorylist as $category): ?>
         <li class="nav__item">
-            <a href="all-lots.html"><?= $category['category_name'] ?> </a>
+            <a href="all_lots.php ? id=<?= $category['id'] ?>"><?= $category['category_name'] ?> </a>
         </li>
         <?php endforeach; ?>
     </ul>
@@ -23,90 +23,64 @@
                 </div>
            
                 <div class="lot-item__right">
-                    <div class="lot-item__state">
-                        <?php $res = get_dt_range(htmlspecialchars($good["lot_date_end"])) ?>
-                        <div class="lot-item__timer timer <?php if ($res[0] < 1): ?> timer--finishing <?php endif; ?>">
-                            <?php if($res[0] < 0):?> Время истекло
-                            <?php endif ?> 
-                            <?= "$res[0]: $res[1]"; ?>
+                    
+                    <div class="lot-item__state ">
+                        <?php $res = get_dt_range_finish(htmlspecialchars($good["lot_date_end"])) ?>
+                        <div class="lot-item__timer timer <?= $res[1] ?>">
+                            <?= $res[0]; ?>
                         </div>
 
                         <div class="lot-item__cost-state">
+
                             <div class="lot-item__rate">
-                                <span class="lot-item__amount"><?= $good['lot_price_start'] ?></span>
-                                <span class="lot-item__cost"><?= $good['lot_price_start'] ?></span>
+
+                            <?php $current_bet = !$start_bet ? $good['lot_price_start'] : $start_bet ?>
+                                <span class="lot-item__amount">Текущая цена</span>
+                                <span class="lot-item__cost"><?=format_price($current_bet)?></span>
                             </div>
+
                             <div class="lot-item__min-cost">
-                                Мин. ставка <span><?= $good['lot_price_start'] + $good['lot_price_step'] ?></span>
+                                <?php $min_bet = $current_bet + $good['lot_price_step']?>
+                                 Мин. ставка <span><?= format_price($min_bet) ?></span>
                             </div>
                         </div>
-                        <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post" autocomplete="off">
-                            <p class="lot-item__form-item form__item form__item--invalid">
+        
+                        <?php $classname = ($class_error or !$is_auth) ? "form__item--invalid" : ""  ?>
+                        <form class="lot-item__form" action="bet.php" method="post" autocomplete="off">
+                            <p class="lot-item__form-item form__item <?= $classname?> ">
                                 <label for="cost">Ваша ставка</label>
-                                <input id="cost" type="text" name="cost" placeholder="12 000">
-                                <span class="form__error">Введите наименование лота</span>
+                                <input id="cost" type="text" name="cost" placeholder=<?= $min_bet ?>>
+                                <?php if(!$is_auth): ?>
+                                <span class="form__error">Делать ставки могут только авторизованные пользователи</span>
+                                <?php endif; ?>
+                                <span class="form__error "><?= $class_error ?></span>
                             </p>
                             <?php if($is_auth): ?>
                             <button type="submit" class="button">Сделать ставку</button>
                             <?php endif; ?>
+                            <input type="hidden" id="min_bet" name="min_bet" value="<?= $min_bet ?>">
+                            <input type="hidden" id="lot_id" name="lot_id" value="<?= $good["id"] ?>">
                         </form>
+
                     </div>
+        <?php endforeach; ?>
                     <div class="history">
-                        <h3>История ставок (<span>10</span>)</h3>
+                        
+                        <?php $count_bet = $count_bet ? $count_bet : "Ставок по данному лоту пока нет" ?>
+                        <h3>История ставок (<span><?= $count_bet ?></span>)</h3>
                         <table class="history__list">
+                            <?php foreach ($res_bet as $history_bet) : ?>
                             <tr class="history__item">
-                                <td class="history__name">Иван</td>
-                                <td class="history__price">10 999 р</td>
-                                <td class="history__time">5 минут назад</td>
+                                <td class="history__name"><?= $history_bet['user_name'] ?></td>
+                                <td class="history__price"><?= $history_bet['price'] ?></td>
+                                <?php $time_bet = get_dt_range_All($history_bet['bet_date']) ?>
+                                <td class="history__time"><?= $time_bet ?></td>
                             </tr>
-                            <tr class="history__item">
-                                <td class="history__name">Константин</td>
-                                <td class="history__price">10 999 р</td>
-                                <td class="history__time">20 минут назад</td>
-                            </tr>
-                            <tr class="history__item">
-                                <td class="history__name">Евгений</td>
-                                <td class="history__price">10 999 р</td>
-                                <td class="history__time">Час назад</td>
-                            </tr>
-                            <tr class="history__item">
-                                <td class="history__name">Игорь</td>
-                                <td class="history__price">10 999 р</td>
-                                <td class="history__time">19.03.17 в 08:21</td>
-                            </tr>
-                            <tr class="history__item">
-                                <td class="history__name">Енакентий</td>
-                                <td class="history__price">10 999 р</td>
-                                <td class="history__time">19.03.17 в 13:20</td>
-                            </tr>
-                            <tr class="history__item">
-                                <td class="history__name">Семён</td>
-                                <td class="history__price">10 999 р</td>
-                                <td class="history__time">19.03.17 в 12:20</td>
-                            </tr>
-                            <tr class="history__item">
-                                <td class="history__name">Илья</td>
-                                <td class="history__price">10 999 р</td>
-                                <td class="history__time">19.03.17 в 10:20</td>
-                            </tr>
-                            <tr class="history__item">
-                                <td class="history__name">Енакентий</td>
-                                <td class="history__price">10 999 р</td>
-                                <td class="history__time">19.03.17 в 13:20</td>
-                            </tr>
-                            <tr class="history__item">
-                                <td class="history__name">Семён</td>
-                                <td class="history__price">10 999 р</td>
-                                <td class="history__time">19.03.17 в 12:20</td>
-                            </tr>
-                            <tr class="history__item">
-                                <td class="history__name">Илья</td>
-                                <td class="history__price">10 999 р</td>
-                                <td class="history__time">19.03.17 в 10:20</td>
-                            </tr>
+                            <?php endforeach; ?>
+                            
                         </table>
                     </div>
                 </div>
             </div>
-        <?php endforeach; ?>
+        
     </section>

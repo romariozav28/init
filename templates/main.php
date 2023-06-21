@@ -4,7 +4,7 @@
     <ul class="promo__list">
         <?php foreach ($categorylist as $category): ?>
         <li class="promo__item promo__item--<?= $category["category_symbol_code"]; ?>">
-            <a class="promo__link" href="pages/all-lots.html"> <?= $category["category_name"]; ?> </a>
+            <a class="promo__link" href="all_lots.php ? id=<?= $category['id'] ?>"> <?= $category["category_name"]; ?> </a>
         </li>
         <?php endforeach; ?>
     </ul>
@@ -27,9 +27,9 @@
                         <span class="lot__amount">Стартовая цена</span>
                         <span class="lot__cost"><?=format_price(htmlspecialchars($good["lot_price_start"]))?></span>
                     </div>
-                    <?php $res = get_dt_range(htmlspecialchars($good["lot_date_end"])) ?>
-                    <div class="lot__timer timer <?php if ($res[0] < 1) : ?> timer--finishing <?php endif; ?>"> 
-                        <?= "$res[0]: $res[1]"; ?>
+                    <?php $res = get_dt_range_finish(htmlspecialchars($good["lot_date_end"])) ?>
+                        <div class="lot-item__timer timer <?= $res[1] ?>">
+                            <?= $res[0]; ?>
                     </div>
                 </div>
             </div>
